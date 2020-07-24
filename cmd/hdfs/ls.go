@@ -13,7 +13,7 @@ import (
 	"github.com/colinmarc/hdfs/v2"
 )
 
-func ls(paths []string, long, all, humanReadable bool) {
+func ls(paths []string, long, all, humanReadable bool, selfOnly bool) {
 	paths, client, err := getClientAndExpandedPaths(paths)
 	if err != nil {
 		fatal(err)
@@ -41,7 +41,7 @@ func ls(paths []string, long, all, humanReadable bool) {
 	}
 
 	if len(files) == 0 && len(dirs) == 1 {
-		printDir(client, dirs[0], long, all, humanReadable)
+		printDir(client, dirs[0], long, all, humanReadable, selfOnly)
 	} else {
 		if long {
 			tw := lsTabWriter()
@@ -62,12 +62,12 @@ func ls(paths []string, long, all, humanReadable bool) {
 			}
 
 			fmt.Printf("%s/:\n", dir)
-			printDir(client, dir, long, all, humanReadable)
+			printDir(client, dir, long, all, humanReadable, selfOnly)
 		}
 	}
 }
 
-func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool) {
+func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, selfOnly bool) {
 	dirReader, err := client.Open(dir)
 	if err != nil {
 		fatal(err)
@@ -77,6 +77,20 @@ func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool) {
 	if long {
 		tw = lsTabWriter()
 		defer tw.Flush()
+	}
+
+	if selfOnly {
+		if long {
+			dirInfo, err := client.Stat(dir)
+			if err != nil {
+				fatal(err)
+			}
+			printLong(tw, ".", dirInfo, humanReadable)
+			tw.Flush()
+		} else {
+			fmt.Println(".")
+		}
+		return
 	}
 
 	if all {

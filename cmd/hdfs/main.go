@@ -43,6 +43,7 @@ Valid commands:
 	lsl    = lsOpts.Bool('l')
 	lsa    = lsOpts.Bool('a')
 	lsh    = lsOpts.Bool('h')
+	lsd    = lsOpts.Bool('d')
 
 	rmOpts = getopt.New()
 	rmr    = rmOpts.Bool('r')
@@ -107,7 +108,7 @@ func main() {
 		fatal("gohdfs version", version)
 	case "ls":
 		lsOpts.Parse(argv)
-		ls(lsOpts.Args(), *lsl, *lsa, *lsh)
+		ls(lsOpts.Args(), *lsl, *lsa, *lsh, *lsd)
 	case "rm":
 		rmOpts.Parse(argv)
 		rm(rmOpts.Args(), *rmr, *rmf)
