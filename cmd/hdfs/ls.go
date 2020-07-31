@@ -116,31 +116,41 @@ func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, re
 		}
 	}
 
-	var partial []os.FileInfo
+	var partial, files []os.FileInfo
 	var fileCount = 0
 	for ; err != io.EOF; partial, err = dirReader.Readdir(100) {
 		if err != nil {
 			fatal(err)
 		}
 		fileCount += len(partial)
-		printFiles(tw, dir, partial, long, all, recursive, humanReadable, selfOnly)
+		files = append(files, partial...)
 	}
 
 	if recursive {
-		if recursionLevel > 0 {
-			fmt.Println()
+		if long {
+			if recursionLevel > 0 {
+				fmt.Fprintln(tw)
+			}
+			fmt.Fprintf(tw, "%s:\n", dir)
+			fmt.Fprintln(tw, "total", fileCount)
+		} else {
+			if recursionLevel > 0 {
+				fmt.Println()
+			}
+			fmt.Printf("%s:\n", dir)
+			fmt.Println("total", fileCount)
 		}
-		fmt.Printf("%s:\n", dir)
-		fmt.Println("total", fileCount)
 		recursionLevel++
 	}
+
+	printFiles(client, tw, dir, files, long, all, recursive, humanReadable, selfOnly)
 
 	if long {
 		tw.Flush()
 	}
 }
 
-func printFiles(tw *tabwriter.Writer, dir string, files []os.FileInfo, long, all, recursive, humanReadable bool, selfOnly bool) {
+func printFiles(client *hdfs.Client, tw *tabwriter.Writer, dir string, files []os.FileInfo, long, all, recursive, humanReadable, selfOnly bool) {
 	for _, file := range files {
 		if !all && strings.HasPrefix(file.Name(), ".") {
 			continue
@@ -148,12 +158,13 @@ func printFiles(tw *tabwriter.Writer, dir string, files []os.FileInfo, long, all
 
 		if long {
 			printLong(tw, file.Name(), file, humanReadable)
+			tw.Flush()
 		} else {
 			fmt.Println(file.Name())
 		}
 
 		if recursive && file.IsDir() {
-			ls([]string{dir + "/" + file.Name()}, long, all, humanReadable, recursive, selfOnly)
+			printDir(client, dir+"/"+file.Name(), long, all, humanReadable, recursive, selfOnly)
 		}
 	}
 }
