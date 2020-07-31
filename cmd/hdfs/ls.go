@@ -13,7 +13,9 @@ import (
 	"github.com/colinmarc/hdfs/v2"
 )
 
-func ls(paths []string, long, all, humanReadable bool, selfOnly bool) {
+var recursionLevel = 0
+
+func ls(paths []string, long, all, humanReadable bool, recursive bool, selfOnly bool) {
 	paths, client, err := getClientAndExpandedPaths(paths)
 	if err != nil {
 		fatal(err)
@@ -41,7 +43,7 @@ func ls(paths []string, long, all, humanReadable bool, selfOnly bool) {
 	}
 
 	if len(files) == 0 && len(dirs) == 1 {
-		printDir(client, dirs[0], long, all, humanReadable, selfOnly)
+		printDir(client, dirs[0], long, all, humanReadable, recursive, selfOnly)
 	} else {
 		if long {
 			tw := lsTabWriter()
@@ -62,12 +64,12 @@ func ls(paths []string, long, all, humanReadable bool, selfOnly bool) {
 			}
 
 			fmt.Printf("%s/:\n", dir)
-			printDir(client, dir, long, all, humanReadable, selfOnly)
+			printDir(client, dir, long, all, humanReadable, recursive, selfOnly)
 		}
 	}
 }
 
-func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, selfOnly bool) {
+func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, recursive bool, selfOnly bool) {
 	dirReader, err := client.Open(dir)
 	if err != nil {
 		fatal(err)
@@ -115,12 +117,22 @@ func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, se
 	}
 
 	var partial []os.FileInfo
+	var fileCount = 0
 	for ; err != io.EOF; partial, err = dirReader.Readdir(100) {
 		if err != nil {
 			fatal(err)
 		}
+		fileCount += len(partial)
+		printFiles(tw, dir, partial, long, all, recursive, humanReadable, selfOnly)
+	}
 
-		printFiles(tw, partial, long, all, humanReadable)
+	if recursive {
+		if recursionLevel > 0 {
+			fmt.Println()
+		}
+		fmt.Printf("%s:\n", dir)
+		fmt.Println("total", fileCount)
+		recursionLevel++
 	}
 
 	if long {
@@ -128,7 +140,7 @@ func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, se
 	}
 }
 
-func printFiles(tw *tabwriter.Writer, files []os.FileInfo, long, all, humanReadable bool) {
+func printFiles(tw *tabwriter.Writer, dir string, files []os.FileInfo, long, all, recursive, humanReadable bool, selfOnly bool) {
 	for _, file := range files {
 		if !all && strings.HasPrefix(file.Name(), ".") {
 			continue
@@ -138,6 +150,10 @@ func printFiles(tw *tabwriter.Writer, files []os.FileInfo, long, all, humanReada
 			printLong(tw, file.Name(), file, humanReadable)
 		} else {
 			fmt.Println(file.Name())
+		}
+
+		if recursive && file.IsDir() {
+			ls([]string{dir + "/" + file.Name()}, long, all, humanReadable, recursive, selfOnly)
 		}
 	}
 }
