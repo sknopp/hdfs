@@ -58,13 +58,26 @@ func ls(paths []string, long, all, humanReadable bool, recursive bool, selfOnly 
 			}
 		}
 
-		for i, dir := range dirs {
-			if i > 0 || len(files) > 0 {
-				fmt.Println()
+		if selfOnly {
+			for _, dir := range dirs {
+				tw := lsTabWriter()
+				dirstat, err := client.Stat(dir)
+				dirstats := []os.FileInfo{dirstat}
+				if err != nil {
+					fatal(err)
+				}
+				printFiles(client, tw, dir, dirstats, long, all, humanReadable, recursive, selfOnly)
+				tw.Flush()
 			}
+		} else {
+			for i, dir := range dirs {
+				if i > 0 || len(files) > 0 {
+					fmt.Println()
+				}
 
-			fmt.Printf("%s/:\n", dir)
-			printDir(client, dir, long, all, humanReadable, recursive, selfOnly)
+				fmt.Printf("%s/:\n", dir)
+				printDir(client, dir, long, all, humanReadable, recursive, selfOnly)
+			}
 		}
 	}
 }
@@ -156,11 +169,17 @@ func printFiles(client *hdfs.Client, tw *tabwriter.Writer, dir string, files []o
 			continue
 		}
 
+		filename := file.Name()
+		if selfOnly {
+			splittedDir := strings.Split(dir, "/")
+			filename = strings.Join(splittedDir[:len(splittedDir)-1], "/") + "/" + filename
+		}
+
 		if long {
-			printLong(tw, file.Name(), file, humanReadable)
+			printLong(tw, filename, file, humanReadable)
 			tw.Flush()
 		} else {
-			fmt.Println(file.Name())
+			fmt.Println(filename)
 		}
 
 		if recursive && file.IsDir() {
