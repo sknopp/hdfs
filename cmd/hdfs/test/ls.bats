@@ -60,7 +60,6 @@ OUT
 @test "ls -ld" {
   run $HDFS ls -ld /_test_cmd/ls/dir*
   assert_success
-  regex="^((drwxr-xr-x root  hadoop  0 )\w+  \w+ \w+:\w+ /_test_cmd/ls/dir[1-3]\n*){3}$"
   regex="^((drwxr-xr-x hadoop  hadoop  0 )+ [0-9]* .*:.* /_test_cmd/ls/dir[1-3].*$)*"
   [[ $output =~ $regex ]]
 }
