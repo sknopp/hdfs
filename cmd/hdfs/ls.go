@@ -183,7 +183,11 @@ func printFiles(client *hdfs.Client, tw *tabwriter.Writer, dir string, files []o
 		}
 
 		if recursive && file.IsDir() {
-			printDir(client, dir+"/"+file.Name(), long, all, humanReadable, recursive, selfOnly)
+			if dir == "/" {
+				printDir(client, dir+file.Name(), long, all, humanReadable, recursive, selfOnly)
+			} else {
+				printDir(client, dir+"/"+file.Name(), long, all, humanReadable, recursive, selfOnly)
+			}
 		}
 	}
 }

@@ -64,6 +64,16 @@ OUT
   [[ $output =~ $regex ]]
 }
 
+@test "ls -R root" {
+  run $HDFS ls -R /
+  assert_success
+}
+
+@test "ls -R subdir" {
+  run $HDFS ls -R /_test_cmd/ls/dir1
+  assert_success
+}
+
 teardown() {
   $HDFS rm -r /_test_cmd/ls
 }
