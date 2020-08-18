@@ -81,6 +81,8 @@ Valid commands:
 	dfh    = dfOpts.Bool('h')
 
 	testOpts = getopt.New()
+	teste    = testOpts.Bool('e')
+	testd    = testOpts.Bool('d')
 
 	cachedClients map[string]*hdfs.Client = make(map[string]*hdfs.Client)
 	status                                = 0
@@ -153,7 +155,7 @@ func main() {
 		df(*dfh)
 	case "test":
 		testOpts.Parse(argv)
-		test(testOpts.Args())
+		test(testOpts.Args(), *teste, *testd)
 	// it's a seeeeecret command
 	case "complete":
 		complete(argv)
