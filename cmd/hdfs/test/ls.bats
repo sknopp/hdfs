@@ -39,6 +39,32 @@ stat /_test_cmd/nonexistent: file does not exist
 OUT
 }
 
+@test "ls -d" {
+  run $HDFS ls -d /_test_cmd/ls/dir1
+  assert_success
+  assert_output <<OUT
+.
+OUT
+}
+
+@test "ls -d Wildcard" {
+  run $HDFS ls -d /_test_cmd/ls/dir*
+  assert_success
+  assert_output <<OUT
+/_test_cmd/ls/dir1
+/_test_cmd/ls/dir2
+/_test_cmd/ls/dir3
+OUT
+}
+
+@test "ls -ld" {
+  run $HDFS ls -ld /_test_cmd/ls/dir*
+  assert_success
+  regex="^((drwxr-xr-x root  hadoop  0 )\w+  \w+ \w+:\w+ /_test_cmd/ls/dir[1-3]\n*){3}$"
+  regex="^((drwxr-xr-x hadoop  hadoop  0 )+ [0-9]* .*:.* /_test_cmd/ls/dir[1-3].*$)*"
+  [[ $output =~ $regex ]]
+}
+
 teardown() {
   $HDFS rm -r /_test_cmd/ls
 }
