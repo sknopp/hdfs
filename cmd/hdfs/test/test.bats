@@ -73,6 +73,26 @@ setup() {
     assert_success
 }
 
+@test "test -s nonexisting" {
+    run $HDFS test -s /_test_cmd/test/dir0
+    assert_failure
+}
+
+@test "test -s existing empty file" {
+    run $HDFS test -s /_test_cmd/test/dir1/a
+    assert_failure
+}
+
+@test "test -s existing nonempty file" {
+    run $HDFS test -s /_test/foo.txt
+    assert_success
+}
+
+@test "test -s existing directory" {
+    run $HDFS test -s /_test_cmd/test/dir1
+    assert_success
+}
+
 teardown() {
   $HDFS rm -r /_test_cmd/test
 }

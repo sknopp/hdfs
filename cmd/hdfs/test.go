@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func test(paths []string, exists, isdir, readable bool) {
+func test(paths []string, exists, isdir, readable, sizegreaterzero bool) {
 	paths, client, err := getClientAndExpandedPaths(paths)
 	if err != nil {
 		fatal(err)
@@ -17,7 +17,7 @@ func test(paths []string, exists, isdir, readable bool) {
 	fileInfo, err := client.Stat(paths[0])
 
 	if err != nil {
-		if !exists && !isdir && !readable {
+		if !exists && !isdir && !readable && !sizegreaterzero {
 			return
 		}
 		os.Exit(1)
@@ -46,5 +46,15 @@ func test(paths []string, exists, isdir, readable bool) {
 			os.Exit(1)
 		}
 		os.Exit(0)
+	}
+
+	if sizegreaterzero {
+		if fileInfo.IsDir() {
+			os.Exit(0)
+		}
+		if fileInfo.Size() > 0 {
+			os.Exit(0)
+		}
+		os.Exit(1)
 	}
 }
