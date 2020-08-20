@@ -39,19 +39,7 @@ func (c *Client) HdfsStat(name string) (*FileInfo, error) {
 }
 
 func (c *Client) getFileInfo(name string) (os.FileInfo, error) {
-	req := &hdfs.GetFileInfoRequestProto{Src: proto.String(name)}
-	resp := &hdfs.GetFileInfoResponseProto{}
-
-	err := c.namenode.Execute("getFileInfo", req, resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.GetFs() == nil {
-		return nil, os.ErrNotExist
-	}
-
-	return newFileInfo(resp.GetFs(), name), nil
+	return c.getHdfsFileInfo(name)
 }
 
 func (c *Client) getHdfsFileInfo(name string) (*FileInfo, error) {
