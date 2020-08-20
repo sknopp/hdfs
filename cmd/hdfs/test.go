@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwner bool) {
+func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwner, regular bool) {
 	paths, client, err := getClientAndExpandedPaths(paths)
 	if err != nil {
 		fatal(err)
@@ -17,7 +17,7 @@ func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwn
 	fileInfo, err := client.Stat(paths[0])
 
 	if err != nil {
-		if !exists && !isdir && !readable && !sizegreaterzero && !effectiveOwner {
+		if !exists && !isdir && !readable && !sizegreaterzero && !effectiveOwner && !regular {
 			return
 		}
 		os.Exit(1)
@@ -66,6 +66,13 @@ func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwn
 
 	if effectiveOwner {
 		if hdfsFileInfo.Owner() == client.User() {
+			os.Exit(0)
+		}
+		os.Exit(1)
+	}
+
+	if regular {
+		if fileInfo.Mode().IsRegular() {
 			os.Exit(0)
 		}
 		os.Exit(1)

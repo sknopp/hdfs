@@ -108,6 +108,21 @@ setup() {
     assert_success
 }
 
+@test "test -f nonexisting" {
+    run $HDFS test -f /_test_cmd/test/dir0
+    assert_failure
+}
+
+@test "test -f existing regular file" {
+    run $HDFS test -f /_test_cmd/test/dir1/a
+    assert_success
+}
+
+@test "test -f existing directory" {
+    run $HDFS test -f /_test_cmd/test/dir1/
+    assert_failure
+}
+
 teardown() {
   $HDFS rm -r /_test_cmd/test
 }
