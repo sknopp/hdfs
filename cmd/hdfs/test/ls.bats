@@ -58,9 +58,17 @@ OUT
 }
 
 @test "ls -ld" {
+  run $HDFS ls -ld /_test_cmd/ls
+  assert_success
+  regex="^drwxr-xr-x root  hadoop  0 [a-zA-Z]+ [0-9]+ [0-9]{2}:[0-9]{2} \.$"
+  [[ $output =~ $regex ]]
+}
+
+@test "ls -ld Wildcard" {
   run $HDFS ls -ld /_test_cmd/ls/dir*
   assert_success
-  regex="^((drwxr-xr-x hadoop  hadoop  0 )+ [0-9]* .*:.* /_test_cmd/ls/dir[1-3].*$)*"
+  regex="^(drwxr-xr-x root  hadoop  0 [a-zA-Z]+ [0-9]+ [0-9]{2}:[0-9]{2} /_test_cmd/ls/dir[1-3].{0,1}){3}$"
+  echo $output
   [[ $output =~ $regex ]]
 }
 
