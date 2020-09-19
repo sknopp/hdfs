@@ -71,7 +71,14 @@ OUT
 
 @test "ls -R subdir" {
   run $HDFS ls -R /_test_cmd/ls/dir1
-  assert_success
+  echo $output
+  assert_output <<OUT
+/_test_cmd/ls/dir1:
+total 3
+a
+b
+c
+OUT
 }
 
 teardown() {
