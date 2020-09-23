@@ -72,6 +72,23 @@ OUT
   [[ $output =~ $regex ]]
 }
 
+@test "ls -R root" {
+  run $HDFS ls -R /
+  assert_success
+}
+
+@test "ls -R subdir" {
+  run $HDFS ls -R /_test_cmd/ls/dir1
+  echo $output
+  assert_output <<OUT
+/_test_cmd/ls/dir1:
+total 3
+a
+b
+c
+OUT
+}
+
 teardown() {
   $HDFS rm -r /_test_cmd/ls
 }
