@@ -100,10 +100,10 @@ func printDir(client *hdfs.Client, dir string, long, all, humanReadable bool, re
 			if err != nil {
 				fatal(err)
 			}
-			printLong(tw, ".", dirInfo, humanReadable)
+			printLong(tw, dir, dirInfo, humanReadable)
 			tw.Flush()
 		} else {
-			fmt.Println(".")
+			fmt.Println(dir)
 		}
 		return
 	}

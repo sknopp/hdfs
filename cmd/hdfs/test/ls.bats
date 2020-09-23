@@ -43,7 +43,7 @@ OUT
   run $HDFS ls -d /_test_cmd/ls/dir1
   assert_success
   assert_output <<OUT
-.
+/_test_cmd/ls/dir1
 OUT
 }
 
@@ -60,7 +60,7 @@ OUT
 @test "ls -ld" {
   run $HDFS ls -ld /_test_cmd/ls
   assert_success
-  regex="^drwxr-xr-x [a-z]+  hadoop  0 [a-zA-Z]+ [0-9]+ [0-9]{2}:[0-9]{2} \.$"
+  regex="^drwxr-xr-x [a-z]+  hadoop  0 [a-zA-Z]+ [0-9]+ [0-9]{2}:[0-9]{2} /_test_cmd/ls$"
   [[ $output =~ $regex ]]
 }
 
