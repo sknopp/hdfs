@@ -11,13 +11,12 @@ import (
 	"sort"
 	"strings"
 
-	krb "gopkg.in/jcmturner/gokrb5.v7/client"
-
 	"github.com/colinmarc/hdfs/v2/hadoopconf"
 	hadoop "github.com/colinmarc/hdfs/v2/internal/protocol/hadoop_common"
 	hdfs "github.com/colinmarc/hdfs/v2/internal/protocol/hadoop_hdfs"
 	"github.com/colinmarc/hdfs/v2/internal/rpc"
 	"github.com/colinmarc/hdfs/v2/internal/transfer"
+	krb "github.com/jcmturner/gokrb5/v8/client"
 )
 
 type dialContext func(ctx context.Context, network, addr string) (net.Conn, error)
@@ -65,14 +64,14 @@ type ClientOptions struct {
 	// datanodes via hostname (which is useful in multi-homed setups) or IP
 	// address, which may be required if DNS isn't available.
 	UseDatanodeHostname bool
-	// NamenodeDialFunc is used to connect to the datanodes. If nil, then
+	// NamenodeDialFunc is used to connect to the namenodes. If nil, then
 	// (&net.Dialer{}).DialContext is used.
 	NamenodeDialFunc func(ctx context.Context, network, addr string) (net.Conn, error)
 	// DatanodeDialFunc is used to connect to the datanodes. If nil, then
 	// (&net.Dialer{}).DialContext is used.
 	DatanodeDialFunc func(ctx context.Context, network, addr string) (net.Conn, error)
 	// KerberosClient is used to connect to kerberized HDFS clusters. If provided,
-	// the client will always mutually athenticate when connecting to the
+	// the client will always mutually authenticate when connecting to the
 	// namenode(s).
 	KerberosClient *krb.Client
 	// KerberosServicePrincipleName specifies the Service Principle Name

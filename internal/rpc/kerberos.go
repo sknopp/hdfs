@@ -6,13 +6,12 @@ import (
 	"net"
 	"regexp"
 
-	"gopkg.in/jcmturner/gokrb5.v7/gssapi"
-	"gopkg.in/jcmturner/gokrb5.v7/iana/keyusage"
-	"gopkg.in/jcmturner/gokrb5.v7/spnego"
-	krbtypes "gopkg.in/jcmturner/gokrb5.v7/types"
-
 	hadoop "github.com/colinmarc/hdfs/v2/internal/protocol/hadoop_common"
 	"github.com/colinmarc/hdfs/v2/internal/sasl"
+	"github.com/jcmturner/gokrb5/v8/gssapi"
+	"github.com/jcmturner/gokrb5/v8/iana/keyusage"
+	"github.com/jcmturner/gokrb5/v8/spnego"
+	krbtypes "github.com/jcmturner/gokrb5/v8/types"
 )
 
 const saslRpcCallId = -33
@@ -63,7 +62,8 @@ func (c *NamenodeConnection) doKerberosHandshake() error {
 			return err
 		}
 
-		switch challenge.Qop {
+		qop := challenge.Qop[0]
+		switch qop {
 		case sasl.QopPrivacy, sasl.QopIntegrity:
 			// Switch to SASL RPC handler
 			c.transport = &saslTransport{
@@ -71,7 +71,7 @@ func (c *NamenodeConnection) doKerberosHandshake() error {
 					clientID: c.ClientID,
 				},
 				sessionKey: sessionKey,
-				privacy:    challenge.Qop == sasl.QopPrivacy,
+				privacy:    qop == sasl.QopPrivacy,
 			}
 		case sasl.QopAuthentication:
 			// No special transport is required.
