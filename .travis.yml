@@ -29,7 +29,8 @@ deploy:
   provider: releases
   api_key:
     secure: PGV6zAB0bGUda5FzIZM4hRrgfPSTPqXQDndcrECdba6Dbg74IGf5eF3mvunjkie0i7mzR7YXXmYpi5SS5dOHoLZLknflcjcgRbKg/4LUPDMslj+iduN/FrM4elTYgPSMrAGebHbdlsTrZjX+3P2cud3xsmgsx/BSaKdLtWGX95Gi0OMJJmzhzuHza3VlK/FfFjT4ra+8cSn72zkjCuF7KeK0e1btFN2ZcJtMIZonsIQGg4bRh9nKtFhjMSaC2+uty8o0Ei/zHu15qNtRsVY643dBDmzSyExjDx8WhFhFSAko5gJU11WVqy2u962bYa7VSicRb7W0IegQC/W7Z1tkqDNDxZzmpznJQAt5ldRM9p3qFEjWow65qLgRsweidcYdfklie1D4u2PBweBYs98CjhW5LYjyllmmV0fRS/zv+9m0/fbwGkh6MUFyVIAPhJw1lL0a8w5lothgR+xfnqkIs/2abHGrKT9lEcViW/5yugSXwhHoP8fLFLiPnLJQPBruXCnoNckNlxTnMD+AlKmX7UL6ZmednrnDQ7Z3aFNQUWxiNKrvHQfNZD4txjfT1jeJHXEuu6w1cEJrJqI4D6LljOcrYxEM0AU4W7DNsVQ/txzHCAKZxfA+MKn9+9+X7PtTWORPve/UKpMxFZKkCYZF7mMjE+nJE1q45DLt8w8Ax9c=
-  file: ''
+  file: gohdfs-*.tar.gz
+  file_glob: true
   on:
     repo: sknopp/hdfs
 cache:
