@@ -9,34 +9,30 @@ env:
 - PLATFORM=cdh6 KERBEROS=true RPC_PROTECTION=authentication DATA_TRANSFER_PROTECTION=authentication
 - PLATFORM=cdh6 KERBEROS=true RPC_PROTECTION=integrity DATA_TRANSFER_PROTECTION=integrity
 - PLATFORM=cdh6 KERBEROS=true RPC_PROTECTION=privacy DATA_TRANSFER_PROTECTION=privacy
-- PLATFORM=cdh6 KERBEROS=true RPC_PROTECTION=privacy DATA_TRANSFER_PROTECTION=privacy AES=true
+- PLATFORM=cdh6 KERBEROS=true RPC_PROTECTION=privacy DATA_TRANSFER_PROTECTION=privacy
+  AES=true
 before_install:
-- export GO111MODULE=on # Travis installs into $GOPATH/src, which disables module support by default.
+- export GO111MODULE=on
 install:
 - git clone https://github.com/sstephenson/bats $HOME/bats
 - mkdir -p $HOME/bats/build
 - "$HOME/bats/install.sh $HOME/bats/build"
 - export PATH="$PATH:$HOME/bats/build/bin"
-- ./travis-setup.sh $PLATFORM
+- "./travis-setup.sh $PLATFORM"
 before_script:
 - export HADOOP_CONF_DIR="/etc/hadoop/conf"
-- find internal/protocol -name *.pb.go | xargs touch # so make doesn't try to regen protobuf files
+- find internal/protocol -name *.pb.go | xargs touch
 script: make test
 after_failure: find /var/log/hadoop-hdfs | xargs cat
 before_deploy: make release
 deploy:
-  skip_cleanup: true
   provider: releases
   api_key:
-    secure: MhNMuDo2ptwA3pXVJfIppskC0/Tg2pyoBcK/A1MAh8ifRrcw3HA2HjOgOj8HxE136aWLW90vnO1rpPRS60lyQikKyJtn2bg0/Earyz40bdQIxpxjeGyzS2yGdyuORivAoBqRMNXDBeMYjwIB/D/BkBJFRjk+VKn6hy6XgalbHcA=
-  file: gohdfs-*.tar.gz
-  file_glob: true
+    secure: PGV6zAB0bGUda5FzIZM4hRrgfPSTPqXQDndcrECdba6Dbg74IGf5eF3mvunjkie0i7mzR7YXXmYpi5SS5dOHoLZLknflcjcgRbKg/4LUPDMslj+iduN/FrM4elTYgPSMrAGebHbdlsTrZjX+3P2cud3xsmgsx/BSaKdLtWGX95Gi0OMJJmzhzuHza3VlK/FfFjT4ra+8cSn72zkjCuF7KeK0e1btFN2ZcJtMIZonsIQGg4bRh9nKtFhjMSaC2+uty8o0Ei/zHu15qNtRsVY643dBDmzSyExjDx8WhFhFSAko5gJU11WVqy2u962bYa7VSicRb7W0IegQC/W7Z1tkqDNDxZzmpznJQAt5ldRM9p3qFEjWow65qLgRsweidcYdfklie1D4u2PBweBYs98CjhW5LYjyllmmV0fRS/zv+9m0/fbwGkh6MUFyVIAPhJw1lL0a8w5lothgR+xfnqkIs/2abHGrKT9lEcViW/5yugSXwhHoP8fLFLiPnLJQPBruXCnoNckNlxTnMD+AlKmX7UL6ZmednrnDQ7Z3aFNQUWxiNKrvHQfNZD4txjfT1jeJHXEuu6w1cEJrJqI4D6LljOcrYxEM0AU4W7DNsVQ/txzHCAKZxfA+MKn9+9+X7PtTWORPve/UKpMxFZKkCYZF7mMjE+nJE1q45DLt8w8Ax9c=
+  file: ''
   on:
-    repo: colinmarc/hdfs
-    tags: true
-    all_branches: true
-    condition: $PLATFORM = hdp2
+    repo: sknopp/hdfs
 cache:
   directories:
-  - $HOME/.cache/go-build
-  - $GOPATH/pkg/mod
+  - "$HOME/.cache/go-build"
+  - "$GOPATH/pkg/mod"
