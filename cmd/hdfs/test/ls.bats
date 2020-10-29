@@ -77,6 +77,31 @@ OUT
   assert_success
 }
 
+@test "ls -R dir" {
+  run $HDFS ls -R /_test_cmd/ls/
+  echo $output
+  assert_output <<OUT
+/_test_cmd/ls:
+total 3
+dir1
+dir2
+dir3
+
+/_test_cmd/ls/dir1:
+total 3
+a
+b
+c
+
+/_test_cmd/ls/dir2:
+total 1
+d
+
+/_test_cmd/ls/dir3:
+total 0
+OUT
+}
+
 @test "ls -R subdir" {
   run $HDFS ls -R /_test_cmd/ls/dir1
   echo $output
