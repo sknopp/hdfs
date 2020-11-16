@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 )
 
 func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwner, regular bool) {
@@ -65,7 +66,8 @@ func test(paths []string, exists, isdir, readable, sizegreaterzero, effectiveOwn
 	}
 
 	if effectiveOwner {
-		if hdfsFileInfo.Owner() == client.User() {
+		clientUser := strings.Split(client.User(), "/")[0]
+		if hdfsFileInfo.Owner() == clientUser {
 			os.Exit(0)
 		}
 		os.Exit(1)

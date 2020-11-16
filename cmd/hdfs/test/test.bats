@@ -100,11 +100,13 @@ setup() {
 
 @test "test -O existing file" {
     run $HDFS test -O /_test_cmd/test/dir1/a
+    echo $output
     assert_success
 }
 
 @test "test -O existing directory" {
     run $HDFS test -O /_test_cmd/test/dir1/
+    echo $output
     assert_success
 }
 
