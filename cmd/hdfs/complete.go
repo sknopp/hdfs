@@ -25,6 +25,7 @@ var knownCommands = []string{
 	"getmerge",
 	"put",
 	"df",
+	"test",
 }
 
 func complete(args []string) {

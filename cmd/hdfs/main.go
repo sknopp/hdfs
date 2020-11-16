@@ -80,6 +80,14 @@ Valid commands:
 	dfOpts = getopt.New()
 	dfh    = dfOpts.Bool('h')
 
+	testOpts = getopt.New()
+	teste    = testOpts.Bool('e')
+	testd    = testOpts.Bool('d')
+	testr    = testOpts.Bool('r')
+	tests    = testOpts.Bool('s')
+	testO    = testOpts.Bool('O')
+	testf    = testOpts.Bool('f')
+
 	cachedClients map[string]*hdfs.Client = make(map[string]*hdfs.Client)
 	status                                = 0
 )
@@ -95,6 +103,7 @@ func init() {
 	duOpts.SetUsage(printHelp)
 	getmergeOpts.SetUsage(printHelp)
 	dfOpts.SetUsage(printHelp)
+	testOpts.SetUsage(printHelp)
 }
 
 func main() {
@@ -148,6 +157,9 @@ func main() {
 	case "df":
 		dfOpts.Parse(argv)
 		df(*dfh)
+	case "test":
+		testOpts.Parse(argv)
+		test(testOpts.Args(), *teste, *testd, *testr, *tests, *testO, *testf)
 	// it's a seeeeecret command
 	case "complete":
 		complete(argv)

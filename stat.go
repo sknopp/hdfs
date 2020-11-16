@@ -28,7 +28,21 @@ func (c *Client) Stat(name string) (os.FileInfo, error) {
 	return fi, err
 }
 
+// HdfsStat returns an hdfs.FileInfo describing the named file or directory
+func (c *Client) HdfsStat(name string) (*FileInfo, error) {
+	fi, err := c.getHdfsFileInfo(name)
+	if err != nil {
+		err = &os.PathError{"stat", name, interpretException(err)}
+	}
+
+	return fi, err
+}
+
 func (c *Client) getFileInfo(name string) (os.FileInfo, error) {
+	return c.getHdfsFileInfo(name)
+}
+
+func (c *Client) getHdfsFileInfo(name string) (*FileInfo, error) {
 	req := &hdfs.GetFileInfoRequestProto{Src: proto.String(name)}
 	resp := &hdfs.GetFileInfoResponseProto{}
 
